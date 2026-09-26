@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>pfpRent admin</title>
+<link rel="icon" href="/avatar.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/admin-fonts.css">
+<style>
+:root{--bg:#050505;--card:#0e0e0e;--line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.18);--text:#fafafa;--dim:#8a8a8a;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--text);font:14px/1.45 Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+header{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(5,5,5,.9);backdrop-filter:blur(10px);z-index:5}
+header img{width:32px;height:32px;border-radius:50%}
+header b{font-weight:700;font-size:18px;letter-spacing:-.03em}
+header .sp{flex:1}
+header small{color:var(--dim);font-family:'Geist Mono',monospace;font-size:12px}
+main{max-width:1180px;margin:0 auto;padding:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;align-items:start}
+.card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.01));padding:16px;display:grid;gap:12px;min-width:0}
+.card.wide{grid-column:1/-1}
+h2{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.sub{color:var(--dim);font-size:13px}
+.big{font-size:24px;font-weight:700;letter-spacing:-.04em}
+#modeCard.live{border-color:#fff;box-shadow:0 0 50px -20px #fff}
+.nums{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.nums div{border:1px solid var(--line);border-radius:12px;padding:10px}
+.nums small{display:block;color:var(--dim);font-family:'Geist Mono',monospace;font-size:10.5px;letter-spacing:.05em}
+.nums b{font-size:18px;font-weight:600}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input,select{background:rgba(255,255,255,.04);border:1px solid var(--line2);border-radius:10px;padding:9px 10px;min-width:0;outline:none}
+input:focus,select:focus{border-color:#fff}
+input.grow{flex:1;min-width:150px}
+#fundAmt{min-width:110px}
+button{background:#fff;color:#000;border:0;border-radius:99px;padding:9px 15px;font-weight:600;cursor:pointer}
+button.ghost,button.mini{background:transparent;color:#fff;border:1px solid var(--line2)}
+button.mini{padding:4px 10px;font-size:12px}
+button:disabled{opacity:.4}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+label{display:grid;gap:4px;font-size:12px;color:var(--dim)}
+label input,label select{color:var(--text);font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--dim);font-weight:400;font-family:'Geist Mono',monospace;font-size:11px}
+td small{color:var(--dim)}
+tr.banned{opacity:.45}
+.scroll{overflow:auto;max-height:420px}
+.tag{font-family:'Geist Mono',monospace;font-size:10.5px;border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:var(--dim)}
+.tag.confirmed{color:#fff;border-color:#fff}.tag.failed{color:#ff8f8f;border-color:#ff8f8f}
+#events div{padding:5px 0;border-bottom:1px solid var(--line);font-size:13px}
+#events small{color:var(--dim);font-family:'Geist Mono',monospace;font-size:11px;display:inline-block;width:62px}
+.addr{font-family:'Geist Mono',monospace;font-size:12.5px;word-break:break-all}
+.warn{color:#ffcf6b;font-size:13px}
+#testOut img{width:40px;height:40px;border-radius:50%;vertical-align:middle}
+#gate{max-width:420px;margin:12vh auto;padding:20px;display:grid;gap:14px;text-align:center}
+#gate img{width:84px;height:84px;border-radius:50%;margin:0 auto}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;background:#fff;color:#000;font-weight:600;padding:10px 16px;border-radius:99px;transition:all .25s;pointer-events:none;z-index:9;max-width:90vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}.toast.bad{background:#ff8f8f}
+</style>
+</head>
+<body>
+<div id="gate">
+  <img src="/avatar.svg" alt="">
+  <div class="big">pfpRent admin</div>
+  <button id="loginWallet">Connect admin wallet</button>
+  <div class="sub">or</div>
+  <div class="row"><input id="key" type="password" placeholder="ADMIN_KEY" class="grow"><button class="ghost" id="loginKey">Log in</button></div>
+</div>
+
+<div id="main" hidden>
+<header><img src="/avatar.svg" alt=""><b>pfpRent admin</b><span class="sp"></span><small id="tick"></small><button class="ghost mini" id="logout">Log out</button></header>
+<main>
+  <section class="card" id="modeCard">
+    <h2>Payouts</h2>
+    <div class="big" id="modeBig">…</div>
+    <div class="sub" id="modeNote"></div>
+    <div class="row"><button id="goLive">Go live</button><button class="ghost" id="pause">Pause checks</button><button class="ghost" id="payNow">Pay owed now</button></div>
+    <div class="sub" id="members"></div>
+    <div class="sub" id="source"></div>
+  </section>
+
+  <section class="card">
+    <h2>Treasury</h2>
+    <div class="addr"><a id="addrLink" href="#" target="_blank" rel="noopener"><span id="addr"></span></a></div>
+    <div class="row"><button class="mini" id="copyAddr">Copy address</button><button class="mini" id="backup">Back up key</button></div>
+    <div class="nums"><div><small>SOL</small><b id="tSol">0</b></div><div><small>$PFP</small><b id="tTok">0</b></div><div><small>OWED TO MEMBERS</small><b id="tOwed">0</b></div><div><small>FREE TO PAY OUT</small><b id="tFree">0</b></div></div>
+    <div class="warn" id="tWarn"></div>
+  </section>
+
+  <section class="card">
+    <h2>Fund the treasury</h2>
+    <div class="sub">Connect your wallet and send $PFP (to pay people) or SOL (for fees).</div>
+    <div class="row"><input id="fundAmt" type="number" min="0" step="any" placeholder="Amount" class="grow"><select id="fundAsset"><option value="PFP">$PFP</option><option value="SOL">SOL</option></select><button id="fund">Send from my wallet</button></div>
+    <div class="sub" id="fundOut"></div>
+    <h2 style="margin-top:6px">Withdraw</h2>
+    <div class="row"><input id="wAmt" type="number" min="0" step="any" placeholder="Amount" style="width:110px"><select id="wAsset"><option value="PFP">$PFP</option><option value="SOL">SOL</option></select><input id="wTo" placeholder="To (empty = your connected wallet)" class="grow"><button class="ghost" id="withdraw">Withdraw</button></div>
+    <div class="sub" id="wOut"></div>
+  </section>
+
+  <section class="card">
+    <h2>The hourly pot</h2>
+    <label>Where the pot comes from<select id="r_poolMode"><option value="percent">% of the treasury's free $PFP</option><option value="fixed">Fixed amount every hour</option><option value="fees">Creator fees: claim, buy $PFP, pay it out</option></select></label>
+    <label data-pool="fixed">$PFP per hour<input id="r_poolFixed" type="number" min="0" step="any"></label>
+    <label data-pool="percent">% of free treasury per hour<input id="r_poolPercent" type="number" min="0" max="100" step="any"></label>
+    <label data-pool="fees">% of claimed SOL that buys $PFP<input id="r_feesBuyPercent" type="number" min="0" max="100" step="1"></label>
+    <div class="sub" data-pool="fees">Fees mode needs the treasury to be the wallet that created $PFP on pump.fun (set TREASURY_SECRET to that wallet).</div>
+    <div class="row"><button class="ghost" id="claim">Claim creator fees now</button><input id="buySol" type="number" step="any" placeholder="SOL" style="width:80px"><button class="ghost" id="buy">Buy $PFP</button></div>
+  </section>
+
+  <section class="card">
+    <h2>Rules</h2>
+    <div class="grid2">
+      <label>Min followers<input id="r_minFollowers" type="number" min="0"></label>
+      <label>Min account age (days)<input id="r_minAccountDays" type="number" min="0"></label>
+      <label>Must hold $PFP (0 = off)<input id="r_minHold" type="number" min="0" step="any"></label>
+      <label>Name-tag bonus (0.5 = +50%)<input id="r_nameTagBonus" type="number" min="0" step="0.05"></label>
+      <label>Max share of a pot (%)<input id="r_maxSharePercent" type="number" min="0" max="100" step="0.5"></label>
+      <label>Min payout ($PFP)<input id="r_payoutMin" type="number" min="0" step="any"></label>
+      <label>Check each PFP about every (min)<input id="r_checkEveryMinutes" type="number" min="2" step="1"></label>
+      <label>Follower bands (min:weight)<input id="r_bands"></label>
+    </div>
+    <button id="saveRules">Save rules</button>
+  </section>
+
+  <section class="card">
+    <h2>Start a raid</h2>
+    <div class="grid2">
+      <label>Type<select id="rk"><option value="quote">Quote the post</option><option value="reply">Reply to the post</option><option value="retweet">Retweet the post</option></select></label>
+      <label>Pot ($PFP)<input id="rpool" type="number" min="0" step="any"></label>
+      <label>Hours<input id="rhours" type="number" min="0.1" step="any" value="24"></label>
+      <label>Title<input id="rtitle" placeholder="Quote the launch post"></label>
+    </div>
+    <div class="row"><input id="rurl" placeholder="Link to the post" class="grow"><button id="raidGo">Start raid</button></div>
+    <div id="raids" class="scroll"></div>
+  </section>
+
+  <section class="card">
+    <h2>Tools</h2>
+    <div class="row"><button class="ghost" id="checkAll">Check everyone now</button></div>
+    <div class="row"><input id="testHandle" placeholder="@handle" class="grow"><button class="ghost" id="testPfp">Is this PFP wearing it?</button></div>
+    <div id="testOut" class="sub"></div>
+    <div class="row"><input id="adjH" placeholder="@handle" class="grow"><input id="adjT" type="number" step="any" placeholder="+/- $PFP" style="width:110px"><button class="ghost" id="adjGo">Adjust owed</button></div>
+  </section>
+
+  <section class="card wide"><h2>This hour</h2><div id="epoch" class="scroll"></div></section>
+  <section class="card wide"><h2>Members</h2><input id="uq" placeholder="Search @handle or wallet"><div id="users" class="scroll"></div></section>
+  <section class="card wide"><h2>Payouts</h2><div id="payouts" class="scroll"></div></section>
+  <section class="card"><h2>Last hours</h2><div id="epochs" class="scroll"></div></section>
+  <section class="card"><h2>Log</h2><div id="events" class="scroll"></div></section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+<script src="/admin.js"></script>
+</body>
+</html>

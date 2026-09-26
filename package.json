@@ -1,0 +1,23 @@
+{
+  "name": "pfprent-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "pfpRent: pays people for wearing the $PFP coin as their X profile picture",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node --no-warnings=ExperimentalWarning index.js"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.15",
+    "@solana/web3.js": "^1.99.0",
+    "bs58": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^4.22.3",
+    "sharp": "^0.35.4"
+  },
+  "main": "index.js"
+}
