@@ -31,7 +31,7 @@ export const CFG = {
   // Solana
   rpcUrl: env('RPC_URL', 'https://api.mainnet-beta.solana.com'),
   treasurySecret: env('TREASURY_SECRET'), // base58 or [..] json; empty = the bot makes its own wallet in DATA_DIR
-  mint: env('PFP_MINT'),
+  mint: env('PFP_MINT', '8L859C39XDnJ4CXh4QxhAKKp1w7KxgGCN3G4qgRcpump'),
   ticker: env('TICKER', 'PFP'),
   priorityMicroLamports: num('PRIORITY_FEE_MICROLAMPORTS', 50000),
   solReserve: num('SOL_RESERVE', 0.05), // never spend the treasury below this much SOL
